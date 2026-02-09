@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:9998/db_nextstepedu
+    username: nextstepedu
+    password: nextstepedu123
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+cloudinary:
+  cloud-name: hrms-storage
+  api-key: 619445869646536
+  api-secret: 9o60YapPCGkIy8uMNT8nS6_IsDc
