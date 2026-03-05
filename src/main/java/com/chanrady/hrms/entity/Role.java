@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,7 +25,8 @@ public class Role {
     @Column(name = "role_name", length = 50, nullable = false, unique = true)
     private String roleName;
 
-    @Column(name = "permissions", columnDefinition = "json", nullable = false)
+    @Column(name = "permissions", columnDefinition = "jsonb")
+    @org.hibernate.annotations.JdbcTypeCode(SqlTypes.JSON)
     private String permissions;
 
     @CreationTimestamp

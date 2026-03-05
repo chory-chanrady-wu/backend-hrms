@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -25,6 +26,9 @@ public class Position {
 
     @Column(name = "description", columnDefinition = "text")
     private String description;
+
+    @Column(name = "salary", precision = 10, scale = 2)
+    private BigDecimal salary;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")

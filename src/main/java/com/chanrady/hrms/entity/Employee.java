@@ -31,8 +31,9 @@ public class Employee {
     @JoinColumn(name = "department_id")
     private Department department;
 
-    @Column(name = "job_title", length = 100)
-    private String jobTitle;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "position_id")
+    private Position position;
 
     @Column(name = "employment_type", length = 50)
     private String employmentType;
@@ -45,6 +46,9 @@ public class Employee {
 
     @Column(name = "status", length = 30)
     private String status;
+
+    @Column(name = "image_url", length = 500)
+    private String imageUrl;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

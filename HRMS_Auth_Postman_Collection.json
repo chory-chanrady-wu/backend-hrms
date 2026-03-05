@@ -1,0 +1,178 @@
+{
+  "info": {
+    "name": "HRMS Auth API",
+    "description": "Authentication endpoints for HRMS - Login and Register",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Register User",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"jane.smith\",\n  \"email\": \"jane@example.com\",\n  \"passwordHash\": \"password123\",\n  \"fullName\": \"Jane Smith\",\n  \"roleId\": 4\n}"
+        },
+        "url": {
+          "raw": "http://localhost:7777/api/v1/auth/register",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "7777",
+          "path": ["api", "v1", "auth", "register"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login User",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"jane.smith\",\n  \"password\": \"password123\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:7777/api/v1/auth/login",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "7777",
+          "path": ["api", "v1", "auth", "login"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login with Seed Admin",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"seed.admin\",\n  \"password\": \"seed_hash_1\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:7777/api/v1/auth/login",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "7777",
+          "path": ["api", "v1", "auth", "login"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login with Seed HR",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"seed.hr\",\n  \"password\": \"seed_hash_2\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:7777/api/v1/auth/login",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "7777",
+          "path": ["api", "v1", "auth", "login"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login with Seed Manager",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"seed.manager\",\n  \"password\": \"seed_hash_3\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:7777/api/v1/auth/login",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "7777",
+          "path": ["api", "v1", "auth", "login"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login with Seed Employee",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"seed.employee\",\n  \"password\": \"seed_hash_4\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:7777/api/v1/auth/login",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "7777",
+          "path": ["api", "v1", "auth", "login"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login with Seed Accountant",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"seed.accountant\",\n  \"password\": \"seed_hash_5\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:7777/api/v1/auth/login",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "7777",
+          "path": ["api", "v1", "auth", "login"]
+        }
+      },
+      "response": []
+    }
+  ]
+}
+
