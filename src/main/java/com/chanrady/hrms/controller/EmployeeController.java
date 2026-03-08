@@ -4,6 +4,7 @@ import com.chanrady.hrms.dto.EmployeeDTO;
 import com.chanrady.hrms.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,8 +21,14 @@ public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<EmployeeDTO> createEmployee(@RequestBody EmployeeDTO employeeDTO) {
+        EmployeeDTO createdEmployee = employeeService.createEmployee(employeeDTO);
+        return new ResponseEntity<>(createdEmployee, HttpStatus.CREATED);
+    }
+
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<EmployeeDTO> createEmployeeWithForm(@ModelAttribute EmployeeDTO employeeDTO) {
         EmployeeDTO createdEmployee = employeeService.createEmployee(employeeDTO);
         return new ResponseEntity<>(createdEmployee, HttpStatus.CREATED);
     }
@@ -77,4 +84,3 @@ public class EmployeeController {
         return ResponseEntity.noContent().build();
     }
 }
-

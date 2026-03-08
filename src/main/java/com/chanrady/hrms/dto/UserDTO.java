@@ -14,10 +14,11 @@ public class UserDTO {
     private String username;
     private String fullName;
     private String email;
+    private String phoneNumber;
+    private Boolean status;
     private String passwordHash;
     private Integer roleId;
     private String roleName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
-

@@ -27,6 +27,8 @@ public class UserServiceImpl implements UserService {
         user.setUsername(userDTO.getUsername());
         user.setFullName(userDTO.getFullName());
         user.setEmail(userDTO.getEmail());
+        user.setPhoneNumber(userDTO.getPhoneNumber());
+        user.setStatus(userDTO.getStatus() != null ? userDTO.getStatus() : true);
         user.setPasswordHash(userDTO.getPasswordHash());
 
         if (userDTO.getRoleId() != null) {
@@ -46,7 +48,14 @@ public class UserServiceImpl implements UserService {
             user.setUsername(userDTO.getUsername());
             user.setFullName(userDTO.getFullName());
             user.setEmail(userDTO.getEmail());
-            user.setPasswordHash(userDTO.getPasswordHash());
+            user.setPhoneNumber(userDTO.getPhoneNumber());
+            if (userDTO.getStatus() != null) {
+                user.setStatus(userDTO.getStatus());
+            }
+            // Only update password if it's provided and not empty
+            if (userDTO.getPasswordHash() != null && !userDTO.getPasswordHash().trim().isEmpty()) {
+                user.setPasswordHash(userDTO.getPasswordHash());
+            }
 
             if (userDTO.getRoleId() != null) {
                 Optional<Role> role = roleRepository.findById(userDTO.getRoleId());
@@ -97,6 +106,8 @@ public class UserServiceImpl implements UserService {
         dto.setUsername(user.getUsername());
         dto.setFullName(user.getFullName());
         dto.setEmail(user.getEmail());
+        dto.setPhoneNumber(user.getPhoneNumber());
+        dto.setStatus(user.getStatus());
         dto.setPasswordHash(user.getPasswordHash());
         if (user.getRole() != null) {
             dto.setRoleId(user.getRole().getId());
@@ -107,4 +118,3 @@ public class UserServiceImpl implements UserService {
         return dto;
     }
 }
-

@@ -13,6 +13,7 @@ public interface EmployeeService {
     EmployeeDTO updateEmployeeImage(Integer id, MultipartFile image) throws IOException;
     void deleteEmployee(Integer id);
     Optional<EmployeeDTO> getEmployeeById(Integer id);
+    Optional<EmployeeDTO> getEmployeeByUserId(Integer userId);
     List<EmployeeDTO> getAllEmployees();
     List<EmployeeDTO> getEmployeesByDepartment(Integer departmentId);
     List<EmployeeDTO> getEmployeesByStatus(String status);

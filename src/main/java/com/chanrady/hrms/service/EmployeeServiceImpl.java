@@ -5,10 +5,12 @@ import com.chanrady.hrms.entity.Employee;
 import com.chanrady.hrms.entity.User;
 import com.chanrady.hrms.entity.Department;
 import com.chanrady.hrms.entity.Position;
+import com.chanrady.hrms.entity.Role;
 import com.chanrady.hrms.repository.EmployeeRepository;
 import com.chanrady.hrms.repository.UserRepository;
 import com.chanrady.hrms.repository.DepartmentRepository;
 import com.chanrady.hrms.repository.PositionRepository;
+import com.chanrady.hrms.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,6 +38,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     private PositionRepository positionRepository;
 
     @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
     private CloudinaryImageService cloudinaryImageService;
 
     @Override
@@ -51,7 +56,6 @@ public class EmployeeServiceImpl implements EmployeeService {
             user = existingUser.get();
         } else {
             // Create a new user if userId is not provided
-            // Require username for new user creation
             if (employeeDTO.getUsername() == null || employeeDTO.getUsername().trim().isEmpty()) {
                 throw new IllegalArgumentException("Username is required to create a new user for this employee");
             }
@@ -63,7 +67,15 @@ public class EmployeeServiceImpl implements EmployeeService {
             user.setUsername(employeeDTO.getUsername());
             user.setFullName(employeeDTO.getFullName() != null ? employeeDTO.getFullName() : "");
             user.setEmail(employeeDTO.getEmail());
+            user.setPhoneNumber(employeeDTO.getPhoneNumber());
             user.setPasswordHash("default_password_hash"); // Default password hash - should be changed by user
+            user.setStatus(true);
+
+            // Default role for new users created through employee flow
+            Role employeeRole = roleRepository.findByRoleName("EMPLOYEE")
+                    .orElseThrow(() -> new IllegalArgumentException("Role EMPLOYEE not found"));
+            user.setRole(employeeRole);
+
             user = userRepository.save(user);
         }
 
@@ -72,8 +84,19 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setEmploymentType(employeeDTO.getEmploymentType());
         employee.setSalary(employeeDTO.getSalary());
         employee.setHireDate(employeeDTO.getHireDate());
-        employee.setStatus(employeeDTO.getStatus());
-        employee.setImageUrl(employeeDTO.getImageUrl());
+        employee.setStatus(employeeDTO.getStatus() != null ? employeeDTO.getStatus() : true);
+
+        // Prefer uploaded image file; fallback to direct imageUrl string
+        if (employeeDTO.getImage() != null && !employeeDTO.getImage().isEmpty()) {
+            try {
+                Map<String, Object> uploadResult = cloudinaryImageService.upload(employeeDTO.getImage());
+                employee.setImageUrl((String) uploadResult.get("secure_url"));
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to upload employee image", e);
+            }
+        } else {
+            employee.setImageUrl(employeeDTO.getImageUrl());
+        }
 
         if (employeeDTO.getDepartmentId() != null) {
             Optional<Department> department = departmentRepository.findById(employeeDTO.getDepartmentId());
@@ -107,7 +130,9 @@ public class EmployeeServiceImpl implements EmployeeService {
             employee.setEmploymentType(employeeDTO.getEmploymentType());
             employee.setSalary(employeeDTO.getSalary());
             employee.setHireDate(employeeDTO.getHireDate());
-            employee.setStatus(employeeDTO.getStatus());
+            if (employeeDTO.getStatus() != null) {
+                employee.setStatus(employeeDTO.getStatus());
+            }
             employee.setImageUrl(employeeDTO.getImageUrl());
 
             if (employeeDTO.getDepartmentId() != null) {
@@ -159,6 +184,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public Optional<EmployeeDTO> getEmployeeByUserId(Integer userId) {
+        return employeeRepository.findByUserId(userId).map(this::convertToDTO);
+    }
+
+    @Override
     public List<EmployeeDTO> getAllEmployees() {
         return employeeRepository.findByDeletedAtIsNull()
                 .stream()
@@ -181,9 +211,23 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public List<EmployeeDTO> getEmployeesByStatus(String status) {
-        return employeeRepository.findByStatus(status)
+        // Convert string to Boolean for query
+        Boolean statusBoolean = null;
+        if ("active".equalsIgnoreCase(status) || "true".equalsIgnoreCase(status)) {
+            statusBoolean = true;
+        } else if ("inactive".equalsIgnoreCase(status) || "false".equalsIgnoreCase(status)) {
+            statusBoolean = false;
+        }
+
+        if (statusBoolean == null) {
+            return List.of();
+        }
+
+        // Query by Boolean status directly
+        final Boolean finalStatus = statusBoolean;
+        return employeeRepository.findAll()
                 .stream()
-                .filter(e -> e.getDeletedAt() == null)
+                .filter(e -> e.getDeletedAt() == null && e.getStatus() != null && e.getStatus().equals(finalStatus))
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
@@ -201,6 +245,8 @@ public class EmployeeServiceImpl implements EmployeeService {
             dto.setUsername(employee.getUser().getUsername());
             dto.setFullName(employee.getUser().getFullName());
             dto.setEmail(employee.getUser().getEmail());
+            dto.setPhoneNumber(employee.getUser().getPhoneNumber());
+            dto.setUserStatus(employee.getUser().getStatus() != null ? employee.getUser().getStatus().toString() : null);
         }
         if (employee.getDepartment() != null) {
             dto.setDepartmentId(employee.getDepartment().getId());
@@ -215,4 +261,3 @@ public class EmployeeServiceImpl implements EmployeeService {
         return dto;
     }
 }
-

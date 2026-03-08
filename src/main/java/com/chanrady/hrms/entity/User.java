@@ -30,6 +30,12 @@ public class User {
     @Column(name = "email", length = 100, unique = true)
     private String email;
 
+    @Column(name = "phone_number", length = 20)
+    private String phoneNumber;
+
+    @Column(name = "status")
+    private Boolean status;
+
     @Column(name = "password_hash", length = 255, nullable = false)
     private String passwordHash;
 

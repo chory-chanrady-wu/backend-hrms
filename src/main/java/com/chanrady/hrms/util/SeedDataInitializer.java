@@ -364,6 +364,7 @@ public class SeedDataInitializer implements CommandLineRunner {
         u1.setFullName("Seed Admin");
         u1.setEmail("seed.admin@hrms.local");
         u1.setPasswordHash("seed_hash_1");
+        u1.setStatus(true);
         u1.setRole(roles.get(0));
         users.add(u1);
 
@@ -372,6 +373,7 @@ public class SeedDataInitializer implements CommandLineRunner {
         u2.setFullName("Seed HR");
         u2.setEmail("seed.hr@hrms.local");
         u2.setPasswordHash("seed_hash_2");
+        u2.setStatus(true);
         u2.setRole(roles.get(1));
         users.add(u2);
 
@@ -380,6 +382,7 @@ public class SeedDataInitializer implements CommandLineRunner {
         u3.setFullName("Seed Manager");
         u3.setEmail("seed.manager@hrms.local");
         u3.setPasswordHash("seed_hash_3");
+        u3.setStatus(true);
         u3.setRole(roles.get(2));
         users.add(u3);
 
@@ -388,6 +391,7 @@ public class SeedDataInitializer implements CommandLineRunner {
         u4.setFullName("Seed Employee");
         u4.setEmail("seed.employee@hrms.local");
         u4.setPasswordHash("seed_hash_4");
+        u4.setStatus(true);
         u4.setRole(roles.get(3));
         users.add(u4);
 
@@ -396,6 +400,7 @@ public class SeedDataInitializer implements CommandLineRunner {
         u5.setFullName("Seed Accountant");
         u5.setEmail("seed.accountant@hrms.local");
         u5.setPasswordHash("seed_hash_5");
+        u5.setStatus(true);
         u5.setRole(roles.get(4));
         users.add(u5);
 
@@ -412,7 +417,7 @@ public class SeedDataInitializer implements CommandLineRunner {
         e1.setEmploymentType("Full-time");
         e1.setSalary(new BigDecimal("1800.00"));
         e1.setHireDate(LocalDate.of(2022, 1, 10));
-        e1.setStatus("active");
+        e1.setStatus(true);
         e1.setImageUrl("https://res.cloudinary.com/demo/image/upload/sample.jpg");
         employees.add(e1);
 
@@ -423,7 +428,7 @@ public class SeedDataInitializer implements CommandLineRunner {
         e2.setEmploymentType("Full-time");
         e2.setSalary(new BigDecimal("1200.00"));
         e2.setHireDate(LocalDate.of(2022, 2, 15));
-        e2.setStatus("active");
+        e2.setStatus(true);
         e2.setImageUrl("https://res.cloudinary.com/demo/image/upload/woman.jpg");
         employees.add(e2);
 
@@ -434,7 +439,7 @@ public class SeedDataInitializer implements CommandLineRunner {
         e3.setEmploymentType("Contract");
         e3.setSalary(new BigDecimal("1300.00"));
         e3.setHireDate(LocalDate.of(2023, 3, 1));
-        e3.setStatus("active");
+        e3.setStatus(true);
         e3.setImageUrl("https://res.cloudinary.com/demo/image/upload/man.jpg");
         employees.add(e3);
 
@@ -445,7 +450,7 @@ public class SeedDataInitializer implements CommandLineRunner {
         e4.setEmploymentType("Part-time");
         e4.setSalary(new BigDecimal("1100.00"));
         e4.setHireDate(LocalDate.of(2023, 6, 20));
-        e4.setStatus("active");
+        e4.setStatus(true);
         e4.setImageUrl("https://res.cloudinary.com/demo/image/upload/marketing.jpg");
         employees.add(e4);
 
@@ -456,7 +461,7 @@ public class SeedDataInitializer implements CommandLineRunner {
         e5.setEmploymentType("Full-time");
         e5.setSalary(new BigDecimal("1000.00"));
         e5.setHireDate(LocalDate.of(2024, 1, 5));
-        e5.setStatus("active");
+        e5.setStatus(true);
         e5.setImageUrl("https://res.cloudinary.com/demo/image/upload/office.jpg");
         employees.add(e5);
 

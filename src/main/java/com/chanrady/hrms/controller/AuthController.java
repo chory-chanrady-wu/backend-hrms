@@ -1,8 +1,10 @@
 package com.chanrady.hrms.controller;
 
 import com.chanrady.hrms.dto.UserDTO;
+import com.chanrady.hrms.dto.EmployeeDTO;
 import com.chanrady.hrms.security.JwtTokenProvider;
 import com.chanrady.hrms.service.UserService;
+import com.chanrady.hrms.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -26,6 +28,9 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private EmployeeService employeeService;
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
@@ -149,9 +154,38 @@ public class AuthController {
                     .body(createErrorResponse("Invalid username/email or password"));
             }
 
-            // Login successful - return only JWT tokens
+            // Login successful - generate tokens
             String accessToken = jwtTokenProvider.generateAccessToken(userDTO);
             String refreshToken = jwtTokenProvider.generateRefreshToken(userDTO);
+
+            // Prepare sanitized user info (do not expose passwordHash)
+            Map<String, Object> userInfo = new HashMap<>();
+            userInfo.put("id", userDTO.getId());
+            userInfo.put("username", userDTO.getUsername());
+            userInfo.put("fullName", userDTO.getFullName());
+            userInfo.put("email", userDTO.getEmail());
+            userInfo.put("phoneNumber", userDTO.getPhoneNumber());
+            userInfo.put("status", userDTO.getStatus());
+            userInfo.put("roleId", userDTO.getRoleId());
+            userInfo.put("roleName", userDTO.getRoleName());
+            userInfo.put("createdAt", userDTO.getCreatedAt());
+            userInfo.put("updatedAt", userDTO.getUpdatedAt());
+
+            // Try to get employee details
+            Optional<EmployeeDTO> employee = employeeService.getEmployeeByUserId(userDTO.getId());
+            if (employee.isPresent()) {
+                EmployeeDTO emp = employee.get();
+                userInfo.put("employeeId", emp.getId());
+                userInfo.put("departmentId", emp.getDepartmentId());
+                userInfo.put("departmentName", emp.getDepartmentName());
+                userInfo.put("positionId", emp.getPositionId());
+                userInfo.put("positionName", emp.getPositionName());
+                userInfo.put("employmentType", emp.getEmploymentType());
+                userInfo.put("salary", emp.getSalary());
+                userInfo.put("hireDate", emp.getHireDate());
+                userInfo.put("status", emp.getStatus());
+                userInfo.put("imageUrl", emp.getImageUrl());
+            }
 
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
@@ -160,6 +194,7 @@ public class AuthController {
             response.put("refreshToken", refreshToken);
             response.put("tokenType", "Bearer");
             response.put("expiresIn", jwtTokenProvider.getTokenExpirationSeconds());
+            response.put("user", userInfo);
 
             return ResponseEntity.ok(response);
 

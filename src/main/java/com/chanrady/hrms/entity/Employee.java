@@ -44,8 +44,8 @@ public class Employee {
     @Column(name = "hire_date")
     private LocalDate hireDate;
 
-    @Column(name = "status", length = 30)
-    private String status;
+    @Column(name = "status")
+    private Boolean status;
 
     @Column(name = "image_url", length = 500)
     private String imageUrl;
