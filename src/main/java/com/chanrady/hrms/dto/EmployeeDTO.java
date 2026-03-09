@@ -1,5 +1,6 @@
 package com.chanrady.hrms.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,8 @@ public class EmployeeDTO {
     private String email;
     private String phoneNumber;
     private String userStatus;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String password;
     private Integer departmentId;
     private String departmentName;
     private Integer positionId;
@@ -27,6 +30,9 @@ public class EmployeeDTO {
     private String employmentType;
     private BigDecimal salary;
     private LocalDate hireDate;
+    private LocalDate dateOfBirth;
+    private String nationality;
+    private String address;
     private Boolean status;
     private String imageUrl;
     // Optional form-data file input (key: image)

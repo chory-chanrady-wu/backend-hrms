@@ -8,28 +8,39 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
-@Table(name = "departments")
+@Table(name = "announcements")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Department {
+public class Announcement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "name", length = 100, nullable = false, unique = true)
-    private String name;
+    @Column(name = "title", nullable = false, length = 200)
+    private String title;
 
-    @Column(name = "description", columnDefinition = "text")
-    private String description;
+    @Column(name = "content", nullable = false, columnDefinition = "TEXT")
+    private String content;
+
+    @Column(name = "priority", length = 20)
+    private String priority; // LOW, MEDIUM, HIGH, URGENT
+
+    @Column(name = "status", nullable = false)
+    private Boolean status; // true = active, false = inactive
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "head_of_department_id")
-    private User headOfDepartment;
+    @JoinColumn(name = "created_by", nullable = false)
+    private User createdBy;
+
+    @Column(name = "published_at")
+    private LocalDateTime publishedAt;
+
+    @Column(name = "expires_at")
+    private LocalDateTime expiresAt;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -41,10 +52,4 @@ public class Department {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
-
-    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
-    private List<Employee> employees;
-
-    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
-    private List<Position> positions;
 }

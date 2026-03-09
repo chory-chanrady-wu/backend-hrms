@@ -10,6 +10,7 @@ import java.util.Optional;
 @Repository
 public interface DepartmentRepository extends JpaRepository<Department, Integer> {
     Optional<Department> findByName(String name);
+    boolean existsByNameIgnoreCase(String name);
+    boolean existsByNameIgnoreCaseAndIdNot(String name, Integer id);
     List<Department> findByDeletedAtIsNull();
 }
-

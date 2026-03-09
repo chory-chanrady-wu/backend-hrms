@@ -2,6 +2,8 @@ package com.chanrady.hrms.controller;
 
 import com.chanrady.hrms.dto.UserDTO;
 import com.chanrady.hrms.dto.EmployeeDTO;
+import com.chanrady.hrms.entity.User;
+import com.chanrady.hrms.repository.UserRepository;
 import com.chanrady.hrms.security.JwtTokenProvider;
 import com.chanrady.hrms.service.UserService;
 import com.chanrady.hrms.service.EmployeeService;
@@ -12,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +37,12 @@ public class AuthController {
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     /**
      * Register a new user
@@ -58,7 +67,7 @@ public class AuthController {
                     .body(createErrorResponse("Email is required"));
             }
 
-            if (userDTO.getPasswordHash() == null || userDTO.getPasswordHash().trim().isEmpty()) {
+            if (userDTO.getPassword() == null || userDTO.getPassword().trim().isEmpty()) {
                 return ResponseEntity.badRequest()
                     .body(createErrorResponse("Password is required"));
             }
@@ -130,29 +139,36 @@ public class AuthController {
                     .body(createErrorResponse("Password is required"));
             }
 
-            // Find user by username or email
-            Optional<UserDTO> user;
-
-            // Check if input looks like an email (contains @)
+            // Find user entity by username or email for password verification
+            Optional<User> userEntity;
             if (usernameOrEmail.contains("@")) {
-                user = userService.getUserByEmail(usernameOrEmail);
+                userEntity = userRepository.findByEmail(usernameOrEmail);
             } else {
-                user = userService.getUserByUsername(usernameOrEmail);
+                userEntity = userRepository.findByUsername(usernameOrEmail);
             }
 
             // If not found, return unauthorized
+            if (userEntity.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(createErrorResponse("Invalid username/email or password"));
+            }
+
+            User foundUser = userEntity.get();
+
+            // Validate password using BCrypt
+            if (!passwordEncoder.matches(password, foundUser.getPasswordHash())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(createErrorResponse("Invalid username/email or password"));
+            }
+
+            // Build response user DTO (without password)
+            Optional<UserDTO> user = userService.getUserById(foundUser.getId());
             if (user.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(createErrorResponse("Invalid username/email or password"));
             }
 
             UserDTO userDTO = user.get();
-
-            // Validate password (simple comparison - in production, use proper password hashing)
-            if (!userDTO.getPasswordHash().equals(password)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(createErrorResponse("Invalid username/email or password"));
-            }
 
             // Login successful - generate tokens
             String accessToken = jwtTokenProvider.generateAccessToken(userDTO);

@@ -1,5 +1,6 @@
 package com.chanrady.hrms.util;
 
+import com.chanrady.hrms.entity.Announcement;
 import com.chanrady.hrms.entity.Attendance;
 import com.chanrady.hrms.entity.AuditLog;
 import com.chanrady.hrms.entity.Benefit;
@@ -12,6 +13,7 @@ import com.chanrady.hrms.entity.Payroll;
 import com.chanrady.hrms.entity.Position;
 import com.chanrady.hrms.entity.Role;
 import com.chanrady.hrms.entity.User;
+import com.chanrady.hrms.repository.AnnouncementRepository;
 import com.chanrady.hrms.repository.AttendanceRepository;
 import com.chanrady.hrms.repository.AuditLogRepository;
 import com.chanrady.hrms.repository.BenefitRepository;
@@ -28,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -54,6 +57,8 @@ public class SeedDataInitializer implements CommandLineRunner {
     private final EmployeeBenefitRepository employeeBenefitRepository;
     private final PayrollRepository payrollRepository;
     private final AuditLogRepository auditLogRepository;
+    private final AnnouncementRepository announcementRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public SeedDataInitializer(
             RoleRepository roleRepository,
@@ -67,7 +72,9 @@ public class SeedDataInitializer implements CommandLineRunner {
             BenefitRepository benefitRepository,
             EmployeeBenefitRepository employeeBenefitRepository,
             PayrollRepository payrollRepository,
-            AuditLogRepository auditLogRepository
+            AuditLogRepository auditLogRepository,
+            AnnouncementRepository announcementRepository,
+            PasswordEncoder passwordEncoder
     ) {
         this.roleRepository = roleRepository;
         this.departmentRepository = departmentRepository;
@@ -81,6 +88,8 @@ public class SeedDataInitializer implements CommandLineRunner {
         this.employeeBenefitRepository = employeeBenefitRepository;
         this.payrollRepository = payrollRepository;
         this.auditLogRepository = auditLogRepository;
+        this.announcementRepository = announcementRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -151,6 +160,9 @@ public class SeedDataInitializer implements CommandLineRunner {
                 logger.info("✓ Using existing {} Users", users.size());
             }
 
+            // Assign department heads after users are created
+            assignDepartmentHeads(departments, users);
+
             List<Employee> employees = employeeRepository.count() > 0 ?
                 employeeRepository.findAll() : seedEmployees(users, departments, positions);
             if (employeeRepository.count() == 0) {
@@ -182,6 +194,11 @@ public class SeedDataInitializer implements CommandLineRunner {
             if (auditLogRepository.count() == 0) {
                 seedAuditLogs(users);
                 logger.info("✓ Seeded AuditLog records");
+            }
+
+            if (announcementRepository.count() == 0) {
+                seedAnnouncements(users);
+                logger.info("✓ Seeded Announcement records");
             }
 
             logger.info("========== SEED DATA INITIALIZATION COMPLETED SUCCESSFULLY ==========");
@@ -363,7 +380,7 @@ public class SeedDataInitializer implements CommandLineRunner {
         u1.setUsername("seed.admin");
         u1.setFullName("Seed Admin");
         u1.setEmail("seed.admin@hrms.local");
-        u1.setPasswordHash("seed_hash_1");
+        u1.setPasswordHash(passwordEncoder.encode("seed_hash_1"));
         u1.setStatus(true);
         u1.setRole(roles.get(0));
         users.add(u1);
@@ -372,7 +389,7 @@ public class SeedDataInitializer implements CommandLineRunner {
         u2.setUsername("seed.hr");
         u2.setFullName("Seed HR");
         u2.setEmail("seed.hr@hrms.local");
-        u2.setPasswordHash("seed_hash_2");
+        u2.setPasswordHash(passwordEncoder.encode("seed_hash_2"));
         u2.setStatus(true);
         u2.setRole(roles.get(1));
         users.add(u2);
@@ -381,7 +398,7 @@ public class SeedDataInitializer implements CommandLineRunner {
         u3.setUsername("seed.manager");
         u3.setFullName("Seed Manager");
         u3.setEmail("seed.manager@hrms.local");
-        u3.setPasswordHash("seed_hash_3");
+        u3.setPasswordHash(passwordEncoder.encode("seed_hash_3"));
         u3.setStatus(true);
         u3.setRole(roles.get(2));
         users.add(u3);
@@ -390,7 +407,7 @@ public class SeedDataInitializer implements CommandLineRunner {
         u4.setUsername("seed.employee");
         u4.setFullName("Seed Employee");
         u4.setEmail("seed.employee@hrms.local");
-        u4.setPasswordHash("seed_hash_4");
+        u4.setPasswordHash(passwordEncoder.encode("seed_hash_4"));
         u4.setStatus(true);
         u4.setRole(roles.get(3));
         users.add(u4);
@@ -399,7 +416,7 @@ public class SeedDataInitializer implements CommandLineRunner {
         u5.setUsername("seed.accountant");
         u5.setFullName("Seed Accountant");
         u5.setEmail("seed.accountant@hrms.local");
-        u5.setPasswordHash("seed_hash_5");
+        u5.setPasswordHash(passwordEncoder.encode("seed_hash_5"));
         u5.setStatus(true);
         u5.setRole(roles.get(4));
         users.add(u5);
@@ -417,6 +434,9 @@ public class SeedDataInitializer implements CommandLineRunner {
         e1.setEmploymentType("Full-time");
         e1.setSalary(new BigDecimal("1800.00"));
         e1.setHireDate(LocalDate.of(2022, 1, 10));
+        e1.setDateOfBirth(LocalDate.of(1994, 5, 14));
+        e1.setNationality("Cambodian");
+        e1.setAddress("Phnom Penh, Cambodia");
         e1.setStatus(true);
         e1.setImageUrl("https://res.cloudinary.com/demo/image/upload/sample.jpg");
         employees.add(e1);
@@ -428,6 +448,9 @@ public class SeedDataInitializer implements CommandLineRunner {
         e2.setEmploymentType("Full-time");
         e2.setSalary(new BigDecimal("1200.00"));
         e2.setHireDate(LocalDate.of(2022, 2, 15));
+        e2.setDateOfBirth(LocalDate.of(1996, 8, 22));
+        e2.setNationality("Cambodian");
+        e2.setAddress("Siem Reap, Cambodia");
         e2.setStatus(true);
         e2.setImageUrl("https://res.cloudinary.com/demo/image/upload/woman.jpg");
         employees.add(e2);
@@ -439,6 +462,9 @@ public class SeedDataInitializer implements CommandLineRunner {
         e3.setEmploymentType("Contract");
         e3.setSalary(new BigDecimal("1300.00"));
         e3.setHireDate(LocalDate.of(2023, 3, 1));
+        e3.setDateOfBirth(LocalDate.of(1993, 11, 3));
+        e3.setNationality("Cambodian");
+        e3.setAddress("Battambang, Cambodia");
         e3.setStatus(true);
         e3.setImageUrl("https://res.cloudinary.com/demo/image/upload/man.jpg");
         employees.add(e3);
@@ -450,6 +476,9 @@ public class SeedDataInitializer implements CommandLineRunner {
         e4.setEmploymentType("Part-time");
         e4.setSalary(new BigDecimal("1100.00"));
         e4.setHireDate(LocalDate.of(2023, 6, 20));
+        e4.setDateOfBirth(LocalDate.of(1998, 2, 19));
+        e4.setNationality("Cambodian");
+        e4.setAddress("Kampot, Cambodia");
         e4.setStatus(true);
         e4.setImageUrl("https://res.cloudinary.com/demo/image/upload/marketing.jpg");
         employees.add(e4);
@@ -461,6 +490,9 @@ public class SeedDataInitializer implements CommandLineRunner {
         e5.setEmploymentType("Full-time");
         e5.setSalary(new BigDecimal("1000.00"));
         e5.setHireDate(LocalDate.of(2024, 1, 5));
+        e5.setDateOfBirth(LocalDate.of(1997, 9, 27));
+        e5.setNationality("Cambodian");
+        e5.setAddress("Kandal, Cambodia");
         e5.setStatus(true);
         e5.setImageUrl("https://res.cloudinary.com/demo/image/upload/office.jpg");
         employees.add(e5);
@@ -552,6 +584,76 @@ public class SeedDataInitializer implements CommandLineRunner {
         } catch (Exception e) {
             logger.warn("Failed to seed AuditLogs (JSON type issue - this is non-critical): {}", e.getMessage());
             // Continue anyway, as audit logs are not critical for application startup
+        }
+    }
+
+    private void seedAnnouncements(List<User> users) {
+        List<Announcement> announcements = new ArrayList<>();
+
+        Announcement a1 = new Announcement();
+        a1.setTitle("Welcome to HRMS System");
+        a1.setContent("We are pleased to announce the launch of our new Human Resource Management System. This platform will streamline all HR operations including employee management, attendance tracking, and payroll processing.");
+        a1.setPriority("HIGH");
+        a1.setStatus(true);
+        a1.setCreatedBy(users.get(0)); // Admin
+        a1.setPublishedAt(LocalDateTime.now().minusDays(10));
+        a1.setExpiresAt(LocalDateTime.now().plusMonths(3));
+        announcements.add(a1);
+
+        Announcement a2 = new Announcement();
+        a2.setTitle("Annual Leave Policy Update");
+        a2.setContent("Please note that the annual leave policy has been updated. All employees are now entitled to 18 days of paid annual leave per year. For more details, please contact the HR department.");
+        a2.setPriority("MEDIUM");
+        a2.setStatus(true);
+        a2.setCreatedBy(users.get(1)); // HR
+        a2.setPublishedAt(LocalDateTime.now().minusDays(5));
+        a2.setExpiresAt(LocalDateTime.now().plusMonths(6));
+        announcements.add(a2);
+
+        Announcement a3 = new Announcement();
+        a3.setTitle("Company Holiday - Khmer New Year");
+        a3.setContent("The office will be closed from April 13-16 for Khmer New Year celebrations. Regular operations will resume on April 17. Have a wonderful holiday!");
+        a3.setPriority("URGENT");
+        a3.setStatus(true);
+        a3.setCreatedBy(users.get(0)); // Admin
+        a3.setPublishedAt(LocalDateTime.now().minusDays(3));
+        a3.setExpiresAt(LocalDateTime.now().plusDays(45));
+        announcements.add(a3);
+
+        Announcement a4 = new Announcement();
+        a4.setTitle("New Benefits Program");
+        a4.setContent("We are introducing a new comprehensive benefits program including health insurance, transport allowance, and meal stipend for all full-time employees. Details will be shared in next week's meeting.");
+        a4.setPriority("MEDIUM");
+        a4.setStatus(true);
+        a4.setCreatedBy(users.get(1)); // HR
+        a4.setPublishedAt(LocalDateTime.now().minusDays(2));
+        a4.setExpiresAt(LocalDateTime.now().plusMonths(1));
+        announcements.add(a4);
+
+        Announcement a5 = new Announcement();
+        a5.setTitle("Performance Review Schedule");
+        a5.setContent("Annual performance reviews will be conducted in the first week of April. Please prepare your self-assessment and coordinate with your department manager for scheduling.");
+        a5.setPriority("HIGH");
+        a5.setStatus(true);
+        a5.setCreatedBy(users.get(2)); // Manager
+        a5.setPublishedAt(LocalDateTime.now().minusDays(1));
+        a5.setExpiresAt(LocalDateTime.now().plusDays(30));
+        announcements.add(a5);
+
+        announcementRepository.saveAll(announcements);
+    }
+
+    private void assignDepartmentHeads(List<Department> departments, List<User> users) {
+        // Assign department heads based on appropriate roles
+        if (departments.size() >= 5 && users.size() >= 5) {
+            departments.get(0).setHeadOfDepartment(users.get(0)); // Engineering - Admin
+            departments.get(1).setHeadOfDepartment(users.get(1)); // Human Resources - HR
+            departments.get(2).setHeadOfDepartment(users.get(2)); // Finance - Manager
+            departments.get(3).setHeadOfDepartment(users.get(3)); // Marketing - Employee
+            departments.get(4).setHeadOfDepartment(users.get(4)); // Operations - Accountant
+
+            departmentRepository.saveAll(departments);
+            logger.info("✓ Assigned department heads");
         }
     }
 

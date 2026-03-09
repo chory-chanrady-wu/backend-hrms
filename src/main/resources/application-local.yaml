@@ -12,7 +12,16 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+
 cloudinary:
   cloud-name: hrms-storage
   api-key: 619445869646536
   api-secret: 9o60YapPCGkIy8uMNT8nS6_IsDc
+
+server:
+  tomcat:
+    max-part-count: 50

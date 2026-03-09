@@ -6,6 +6,7 @@ import com.chanrady.hrms.entity.Role;
 import com.chanrady.hrms.repository.UserRepository;
 import com.chanrady.hrms.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,6 +22,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public UserDTO createUser(UserDTO userDTO) {
         User user = new User();
@@ -29,7 +33,10 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userDTO.getEmail());
         user.setPhoneNumber(userDTO.getPhoneNumber());
         user.setStatus(userDTO.getStatus() != null ? userDTO.getStatus() : true);
-        user.setPasswordHash(userDTO.getPasswordHash());
+        if (userDTO.getPassword() == null || userDTO.getPassword().trim().isEmpty()) {
+            throw new IllegalArgumentException("Password is required");
+        }
+        user.setPasswordHash(passwordEncoder.encode(userDTO.getPassword()));
 
         if (userDTO.getRoleId() != null) {
             Optional<Role> role = roleRepository.findById(userDTO.getRoleId());
@@ -53,8 +60,8 @@ public class UserServiceImpl implements UserService {
                 user.setStatus(userDTO.getStatus());
             }
             // Only update password if it's provided and not empty
-            if (userDTO.getPasswordHash() != null && !userDTO.getPasswordHash().trim().isEmpty()) {
-                user.setPasswordHash(userDTO.getPasswordHash());
+            if (userDTO.getPassword() != null && !userDTO.getPassword().trim().isEmpty()) {
+                user.setPasswordHash(passwordEncoder.encode(userDTO.getPassword()));
             }
 
             if (userDTO.getRoleId() != null) {
@@ -108,7 +115,6 @@ public class UserServiceImpl implements UserService {
         dto.setEmail(user.getEmail());
         dto.setPhoneNumber(user.getPhoneNumber());
         dto.setStatus(user.getStatus());
-        dto.setPasswordHash(user.getPasswordHash());
         if (user.getRole() != null) {
             dto.setRoleId(user.getRole().getId());
             dto.setRoleName(user.getRole().getRoleName());

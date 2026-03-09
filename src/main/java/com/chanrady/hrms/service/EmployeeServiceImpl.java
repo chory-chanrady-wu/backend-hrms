@@ -12,6 +12,7 @@ import com.chanrady.hrms.repository.DepartmentRepository;
 import com.chanrady.hrms.repository.PositionRepository;
 import com.chanrady.hrms.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,6 +44,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private CloudinaryImageService cloudinaryImageService;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public EmployeeDTO createEmployee(EmployeeDTO employeeDTO) {
         User user;
@@ -62,13 +66,16 @@ public class EmployeeServiceImpl implements EmployeeService {
             if (employeeDTO.getEmail() == null || employeeDTO.getEmail().trim().isEmpty()) {
                 throw new IllegalArgumentException("Email is required to create a new user for this employee");
             }
+            if (employeeDTO.getPassword() == null || employeeDTO.getPassword().trim().isEmpty()) {
+                throw new IllegalArgumentException("Password is required to create a new user for this employee");
+            }
 
             user = new User();
             user.setUsername(employeeDTO.getUsername());
             user.setFullName(employeeDTO.getFullName() != null ? employeeDTO.getFullName() : "");
             user.setEmail(employeeDTO.getEmail());
             user.setPhoneNumber(employeeDTO.getPhoneNumber());
-            user.setPasswordHash("default_password_hash"); // Default password hash - should be changed by user
+            user.setPasswordHash(passwordEncoder.encode(employeeDTO.getPassword()));
             user.setStatus(true);
 
             // Default role for new users created through employee flow
@@ -84,6 +91,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setEmploymentType(employeeDTO.getEmploymentType());
         employee.setSalary(employeeDTO.getSalary());
         employee.setHireDate(employeeDTO.getHireDate());
+        employee.setDateOfBirth(employeeDTO.getDateOfBirth());
+        employee.setNationality(employeeDTO.getNationality());
+        employee.setAddress(employeeDTO.getAddress());
         employee.setStatus(employeeDTO.getStatus() != null ? employeeDTO.getStatus() : true);
 
         // Prefer uploaded image file; fallback to direct imageUrl string
@@ -130,6 +140,9 @@ public class EmployeeServiceImpl implements EmployeeService {
             employee.setEmploymentType(employeeDTO.getEmploymentType());
             employee.setSalary(employeeDTO.getSalary());
             employee.setHireDate(employeeDTO.getHireDate());
+            employee.setDateOfBirth(employeeDTO.getDateOfBirth());
+            employee.setNationality(employeeDTO.getNationality());
+            employee.setAddress(employeeDTO.getAddress());
             if (employeeDTO.getStatus() != null) {
                 employee.setStatus(employeeDTO.getStatus());
             }
@@ -238,6 +251,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         dto.setEmploymentType(employee.getEmploymentType());
         dto.setSalary(employee.getSalary());
         dto.setHireDate(employee.getHireDate());
+        dto.setDateOfBirth(employee.getDateOfBirth());
+        dto.setNationality(employee.getNationality());
+        dto.setAddress(employee.getAddress());
         dto.setStatus(employee.getStatus());
         dto.setImageUrl(employee.getImageUrl());
         if (employee.getUser() != null) {

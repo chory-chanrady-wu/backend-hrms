@@ -44,6 +44,15 @@ public class Employee {
     @Column(name = "hire_date")
     private LocalDate hireDate;
 
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
+
+    @Column(name = "nationality", length = 100)
+    private String nationality;
+
+    @Column(name = "address", length = 500)
+    private String address;
+
     @Column(name = "status")
     private Boolean status;
 

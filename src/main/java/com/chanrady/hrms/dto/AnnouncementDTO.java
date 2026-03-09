@@ -9,12 +9,16 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DepartmentDTO {
+public class AnnouncementDTO {
     private Integer id;
-    private String name;
-    private String description;
-    private Integer headOfDepartmentId;
-    private String headOfDepartmentName;
+    private String title;
+    private String content;
+    private String priority;
+    private Boolean status;
+    private Integer createdById;
+    private String createdByName;
+    private LocalDateTime publishedAt;
+    private LocalDateTime expiresAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
