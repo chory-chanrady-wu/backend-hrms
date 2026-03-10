@@ -542,6 +542,8 @@ public class SeedDataInitializer implements CommandLineRunner {
             payroll.setBonus(new BigDecimal("100.00"));
             payroll.setDeduction(new BigDecimal("50.00"));
             payroll.setPayDate(LocalDate.now().minusDays(i));
+            payroll.setMonth(LocalDate.now().minusDays(i).getMonthValue());
+            payroll.setYear(LocalDate.now().minusDays(i).getYear());
             payrolls.add(payroll);
         }
 

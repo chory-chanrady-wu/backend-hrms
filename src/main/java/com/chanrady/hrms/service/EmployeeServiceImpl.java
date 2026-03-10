@@ -137,6 +137,15 @@ public class EmployeeServiceImpl implements EmployeeService {
                 employee.setUser(user.get());
             }
 
+            // Update user's full name if provided
+            if (employeeDTO.getFullName() != null && !employeeDTO.getFullName().trim().isEmpty()) {
+                User user = employee.getUser();
+                if (user != null) {
+                    user.setFullName(employeeDTO.getFullName());
+                    userRepository.save(user);
+                }
+            }
+
             employee.setEmploymentType(employeeDTO.getEmploymentType());
             employee.setSalary(employeeDTO.getSalary());
             employee.setHireDate(employeeDTO.getHireDate());
@@ -267,6 +276,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (employee.getDepartment() != null) {
             dto.setDepartmentId(employee.getDepartment().getId());
             dto.setDepartmentName(employee.getDepartment().getName());
+            if (employee.getDepartment().getHeadOfDepartment() != null) {
+                dto.setHeadOfDepartmentId(employee.getDepartment().getHeadOfDepartment().getId());
+                dto.setHeadOfDepartmentName(employee.getDepartment().getHeadOfDepartment().getFullName());
+            }
         }
         if (employee.getPosition() != null) {
             dto.setPositionId(employee.getPosition().getId());

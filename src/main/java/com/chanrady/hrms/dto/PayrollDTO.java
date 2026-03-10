@@ -22,5 +22,6 @@ public class PayrollDTO {
     private LocalDate payDate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Integer month;
+    private Integer year;
 }
-

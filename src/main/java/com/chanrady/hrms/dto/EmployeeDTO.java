@@ -39,4 +39,6 @@ public class EmployeeDTO {
     private MultipartFile image;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Integer headOfDepartmentId;
+    private String headOfDepartmentName;
 }

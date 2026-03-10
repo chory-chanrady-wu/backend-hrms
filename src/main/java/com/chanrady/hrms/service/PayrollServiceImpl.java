@@ -29,6 +29,8 @@ public class PayrollServiceImpl implements PayrollService {
         payroll.setBonus(payrollDTO.getBonus() != null ? payrollDTO.getBonus() : BigDecimal.ZERO);
         payroll.setDeduction(payrollDTO.getDeduction() != null ? payrollDTO.getDeduction() : BigDecimal.ZERO);
         payroll.setPayDate(payrollDTO.getPayDate());
+        payroll.setMonth(payrollDTO.getMonth());
+        payroll.setYear(payrollDTO.getYear());
 
         if (payrollDTO.getEmployeeId() != null) {
             Optional<Employee> employee = employeeRepository.findById(payrollDTO.getEmployeeId());
@@ -48,6 +50,8 @@ public class PayrollServiceImpl implements PayrollService {
             payroll.setBonus(payrollDTO.getBonus() != null ? payrollDTO.getBonus() : BigDecimal.ZERO);
             payroll.setDeduction(payrollDTO.getDeduction() != null ? payrollDTO.getDeduction() : BigDecimal.ZERO);
             payroll.setPayDate(payrollDTO.getPayDate());
+            payroll.setMonth(payrollDTO.getMonth());
+            payroll.setYear(payrollDTO.getYear());
 
             if (payrollDTO.getEmployeeId() != null) {
                 Optional<Employee> employee = employeeRepository.findById(payrollDTO.getEmployeeId());
@@ -102,7 +106,8 @@ public class PayrollServiceImpl implements PayrollService {
         dto.setBonus(payroll.getBonus());
         dto.setDeduction(payroll.getDeduction());
 
-        BigDecimal netSalary = payroll.getBaseSalary();
+        // Fix: Initialize netSalary to BigDecimal.ZERO if baseSalary is null
+        BigDecimal netSalary = payroll.getBaseSalary() != null ? payroll.getBaseSalary() : BigDecimal.ZERO;
         if (payroll.getBonus() != null) {
             netSalary = netSalary.add(payroll.getBonus());
         }
@@ -112,6 +117,8 @@ public class PayrollServiceImpl implements PayrollService {
         dto.setNetSalary(netSalary);
 
         dto.setPayDate(payroll.getPayDate());
+        dto.setMonth(payroll.getMonth());
+        dto.setYear(payroll.getYear());
         if (payroll.getEmployee() != null) {
             dto.setEmployeeId(payroll.getEmployee().getId());
             dto.setEmployeeName(payroll.getEmployee().getUser() != null ?
@@ -122,4 +129,3 @@ public class PayrollServiceImpl implements PayrollService {
         return dto;
     }
 }
-

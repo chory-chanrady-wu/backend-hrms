@@ -48,4 +48,10 @@ public class Payroll {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
+    @Column(name = "month", nullable = false)
+    private Integer month;
+
+    @Column(name = "year", nullable = false)
+    private Integer year;
 }
