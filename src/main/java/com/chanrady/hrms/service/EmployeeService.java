@@ -17,5 +17,5 @@ public interface EmployeeService {
     List<EmployeeDTO> getAllEmployees();
     List<EmployeeDTO> getEmployeesByDepartment(Integer departmentId);
     List<EmployeeDTO> getEmployeesByStatus(String status);
+    boolean validateUserPassword(String usernameOrEmail, String password);
 }
-

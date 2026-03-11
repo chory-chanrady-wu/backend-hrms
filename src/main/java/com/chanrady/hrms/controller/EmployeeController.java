@@ -1,6 +1,7 @@
 package com.chanrady.hrms.controller;
 
 import com.chanrady.hrms.dto.EmployeeDTO;
+import com.chanrady.hrms.dto.ValidatePasswordRequest;
 import com.chanrady.hrms.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -82,5 +83,11 @@ public class EmployeeController {
     public ResponseEntity<Void> deleteEmployee(@PathVariable Integer id) {
         employeeService.deleteEmployee(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/validate-password")
+    public ResponseEntity<Boolean> validatePassword(@RequestBody ValidatePasswordRequest request) {
+        boolean isValid = employeeService.validateUserPassword(request.getUsernameOrEmail(), request.getPassword());
+        return ResponseEntity.ok(isValid);
     }
 }

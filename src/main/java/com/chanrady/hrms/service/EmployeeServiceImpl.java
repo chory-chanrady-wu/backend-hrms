@@ -254,6 +254,19 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public boolean validateUserPassword(String usernameOrEmail, String password) {
+        Optional<User> userOpt = userRepository.findByUsername(usernameOrEmail);
+        if (userOpt.isEmpty()) {
+            userOpt = userRepository.findByEmail(usernameOrEmail);
+        }
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            return passwordEncoder.matches(password, user.getPasswordHash());
+        }
+        return false;
+    }
+
     private EmployeeDTO convertToDTO(Employee employee) {
         EmployeeDTO dto = new EmployeeDTO();
         dto.setId(employee.getId());
