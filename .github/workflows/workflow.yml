@@ -38,7 +38,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             # Login to GHCR on the VPS
-            echo "${{ secrets.GH_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            echo "${{ secrets.VPS_GHCR_PULL }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             # Pull latest image
             docker pull ghcr.io/${{ github.repository }}:latest
             # Stop and remove old container
