@@ -1,16 +1,8 @@
 spring:
   datasource:
-#    url: ${SPRING_DATASOURCE_URL}
-#    username: ${SPRING_DATASOURCE_USERNAME}
-#    password: ${SPRING_DATASOURCE_PASSWORD}
-#    driver-class-name: org.postgresql.Driver
-#    url: jdbc:postgresql://localhost:9999/hrms_db
-#    username: hrms@admin.com
-#    password: Hrmsadmin@11032002
-#    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://114.29.238.125:9999/hrms
-    username: hrms
-    password: hrmsAdmin@2026
+    url: ${SPRING_DATASOURCE_URL} || ${url}
+    username: ${SPRING_DATASOURCE_USERNAME} || ${username}
+    password: ${SPRING_DATASOURCE_PASSWORD} || ${password}
     driver-class-name: org.postgresql.Driver
 
   jpa:
