@@ -21,6 +21,7 @@ public class UserDTO {
     private String password;
     private Integer roleId;
     private String roleName;
+    private String permissions; // Permissions from role
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
