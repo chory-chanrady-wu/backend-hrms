@@ -22,6 +22,7 @@ public class UserDTO {
     private Integer roleId;
     private String roleName;
     private String permissions; // Permissions from role
+    private Integer employeeId; // Employee ID for user
     private String imageUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

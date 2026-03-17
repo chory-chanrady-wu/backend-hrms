@@ -122,8 +122,10 @@ public class UserServiceImpl implements UserService {
         }
         // Set imageUrl from employee if present
         if (user.getEmployee() != null) {
+            dto.setEmployeeId(user.getEmployee().getId());
             dto.setImageUrl(user.getEmployee().getImageUrl());
         } else {
+            dto.setEmployeeId(null);
             dto.setImageUrl(null);
         }
         dto.setCreatedAt(user.getCreatedAt());
