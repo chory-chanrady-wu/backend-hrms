@@ -13,7 +13,7 @@ This project is a Human Resource Management System (HRMS) backend built with Spr
 - Audit logging
 
 ## Technology Stack
-- Java 17+ (or compatible with your setup)
+- Java 21
 - Spring Boot
 - Spring Data JPA
 - Spring Security
@@ -30,7 +30,7 @@ This project is a Human Resource Management System (HRMS) backend built with Spr
 
 ## Setup Instructions
 ### Prerequisites
-- Java JDK 17 or higher
+- Java JDK 21 or higher
 - Maven (or use the included `mvnw.cmd` wrapper)
 - Git
 - (Optional) Docker & Docker Compose
@@ -53,7 +53,7 @@ Edit `src/main/resources/application.properties` or `application-dev.yaml` to se
 ```
 ./mvnw.cmd spring-boot:run
 ```
-The backend will start on [http://localhost:8080](http://localhost:8080) by default.
+The backend will start on [http://localhost:7777](http://localhost:8080) by default.
 
 ## API Usage Overview
 ### Attendance Management Endpoints
@@ -89,13 +89,4 @@ docker build -t hrms-backend .
 docker-compose up --build
 ```
 This will start the backend and any dependent services as defined in `docker-compose.yaml`.
-
-## Contribution Guidelines
-- Fork the repository and create a feature branch.
-- Submit pull requests with clear descriptions.
-- Follow standard Java and Spring Boot best practices.
-- For major changes, please open an issue first to discuss your proposal.
-
-## Contact
-For questions or support, please open an issue or contact the maintainer.
 
