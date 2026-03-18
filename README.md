@@ -53,7 +53,7 @@ Edit `src/main/resources/application.properties` or `application-dev.yaml` to se
 ```
 ./mvnw.cmd spring-boot:run
 ```
-The backend will start on [http://localhost:7777](http://localhost:8080) by default.
+The backend will start on [http://localhost:7777](http://localhost:7777).
 
 ## API Usage Overview
 ### Attendance Management Endpoints
