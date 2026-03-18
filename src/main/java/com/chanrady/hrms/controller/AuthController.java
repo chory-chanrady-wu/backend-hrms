@@ -7,10 +7,6 @@ import com.chanrady.hrms.repository.UserRepository;
 import com.chanrady.hrms.security.JwtTokenProvider;
 import com.chanrady.hrms.service.UserService;
 import com.chanrady.hrms.service.EmployeeService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +22,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/auth")
-@Tag(name = "Authentication", description = "Authentication endpoints for login and register")
 public class AuthController {
 
     @Autowired
@@ -48,12 +43,6 @@ public class AuthController {
      * Register a new user
      */
     @PostMapping("/register")
-    @Operation(summary = "Register a new user", description = "Create a new user account with provided credentials")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "User registered successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid input or user already exists"),
-        @ApiResponse(responseCode = "500", description = "Server error")
-    })
     public ResponseEntity<Map<String, Object>> register(@RequestBody UserDTO userDTO) {
         try {
             // Validate input
@@ -111,13 +100,6 @@ public class AuthController {
      * Login user
      */
     @PostMapping("/login")
-    @Operation(summary = "Login user", description = "Authenticate user with username/email and password")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Login successful"),
-        @ApiResponse(responseCode = "401", description = "Invalid credentials"),
-        @ApiResponse(responseCode = "400", description = "Missing required fields"),
-        @ApiResponse(responseCode = "500", description = "Server error")
-    })
     public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> loginRequest) {
         try {
             // Get username or email (can be either)
