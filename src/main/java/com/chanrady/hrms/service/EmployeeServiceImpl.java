@@ -278,25 +278,53 @@ public class EmployeeServiceImpl implements EmployeeService {
         dto.setAddress(employee.getAddress());
         dto.setStatus(employee.getStatus());
         dto.setImageUrl(employee.getImageUrl());
-        if (employee.getUser() != null) {
-            dto.setUserId(employee.getUser().getId());
-            dto.setUsername(employee.getUser().getUsername());
-            dto.setFullName(employee.getUser().getFullName());
-            dto.setEmail(employee.getUser().getEmail());
-            dto.setPhoneNumber(employee.getUser().getPhoneNumber());
-            dto.setUserStatus(employee.getUser().getStatus() != null ? employee.getUser().getStatus().toString() : null);
-        }
-        if (employee.getDepartment() != null) {
-            dto.setDepartmentId(employee.getDepartment().getId());
-            dto.setDepartmentName(employee.getDepartment().getName());
-            if (employee.getDepartment().getHeadOfDepartment() != null) {
-                dto.setHeadOfDepartmentId(employee.getDepartment().getHeadOfDepartment().getId());
-                dto.setHeadOfDepartmentName(employee.getDepartment().getHeadOfDepartment().getFullName());
+        // Defensive: handle missing user
+        try {
+            if (employee.getUser() != null) {
+                dto.setUserId(employee.getUser().getId());
+                dto.setUsername(employee.getUser().getUsername());
+                dto.setFullName(employee.getUser().getFullName());
+                dto.setEmail(employee.getUser().getEmail());
+                dto.setPhoneNumber(employee.getUser().getPhoneNumber());
+                dto.setUserStatus(employee.getUser().getStatus() != null ? employee.getUser().getStatus().toString() : null);
             }
+        } catch (jakarta.persistence.EntityNotFoundException | org.hibernate.ObjectNotFoundException ex) {
+            // User reference is missing, set fields to null or N/A
+            dto.setUserId(null);
+            dto.setUsername("N/A");
+            dto.setFullName("N/A");
+            dto.setEmail("N/A");
+            dto.setPhoneNumber("N/A");
+            dto.setUserStatus(null);
         }
-        if (employee.getPosition() != null) {
-            dto.setPositionId(employee.getPosition().getId());
-            dto.setPositionName(employee.getPosition().getTitle());
+        // Defensive: handle missing department and headOfDepartment
+        try {
+            if (employee.getDepartment() != null) {
+                dto.setDepartmentId(employee.getDepartment().getId());
+                dto.setDepartmentName(employee.getDepartment().getName());
+                try {
+                    if (employee.getDepartment().getHeadOfDepartment() != null) {
+                        dto.setHeadOfDepartmentId(employee.getDepartment().getHeadOfDepartment().getId());
+                        dto.setHeadOfDepartmentName(employee.getDepartment().getHeadOfDepartment().getFullName());
+                    }
+                } catch (jakarta.persistence.EntityNotFoundException | org.hibernate.ObjectNotFoundException ex) {
+                    dto.setHeadOfDepartmentId(null);
+                    dto.setHeadOfDepartmentName("N/A");
+                }
+            }
+        } catch (jakarta.persistence.EntityNotFoundException | org.hibernate.ObjectNotFoundException ex) {
+            dto.setDepartmentId(null);
+            dto.setDepartmentName("N/A");
+        }
+        // Defensive: handle missing position
+        try {
+            if (employee.getPosition() != null) {
+                dto.setPositionId(employee.getPosition().getId());
+                dto.setPositionName(employee.getPosition().getTitle());
+            }
+        } catch (jakarta.persistence.EntityNotFoundException | org.hibernate.ObjectNotFoundException ex) {
+            dto.setPositionId(null);
+            dto.setPositionName("N/A");
         }
         dto.setCreatedAt(employee.getCreatedAt());
         dto.setUpdatedAt(employee.getUpdatedAt());

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import org.hibernate.ObjectNotFoundException;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -170,7 +171,12 @@ public class AuthController {
             userInfo.put("updatedAt", userDTO.getUpdatedAt());
 
             // Try to get employee details
-            Optional<EmployeeDTO> employee = employeeService.getEmployeeByUserId(userDTO.getId());
+            Optional<EmployeeDTO> employee = Optional.empty();
+            try {
+                employee = employeeService.getEmployeeByUserId(userDTO.getId());
+            } catch (ObjectNotFoundException ex) {
+                // Employee references a missing user, log and continue
+            }
             if (employee.isPresent()) {
                 EmployeeDTO emp = employee.get();
                 userInfo.put("employeeId", emp.getId());
@@ -197,6 +203,10 @@ public class AuthController {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
+            if (e instanceof ObjectNotFoundException) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(createErrorResponse("Invalid username/email or password (user reference missing)"));
+            }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(createErrorResponse("Login failed: " + e.getMessage()));
         }
