@@ -40,13 +40,9 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    /**
-     * Register a new user
-     */
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> register(@RequestBody UserDTO userDTO) {
         try {
-            // Validate input
             if (userDTO.getUsername() == null || userDTO.getUsername().trim().isEmpty()) {
                 return ResponseEntity.badRequest()
                     .body(createErrorResponse("Username is required"));
@@ -61,27 +57,21 @@ public class AuthController {
                 return ResponseEntity.badRequest()
                     .body(createErrorResponse("Password is required"));
             }
-
-            // Check if username already exists
             Optional<UserDTO> existingUserByUsername = userService.getUserByUsername(userDTO.getUsername());
             if (existingUserByUsername.isPresent()) {
                 return ResponseEntity.badRequest()
                     .body(createErrorResponse("Username already exists"));
             }
 
-            // Check if email already exists
             Optional<UserDTO> existingUserByEmail = userService.getUserByEmail(userDTO.getEmail());
             if (existingUserByEmail.isPresent()) {
                 return ResponseEntity.badRequest()
                     .body(createErrorResponse("Email already exists"));
             }
 
-            // Set default role (EMPLOYEE) if not provided
             if (userDTO.getRoleId() == null) {
-                userDTO.setRoleId(4); // EMPLOYEE role ID (from seed data)
+                userDTO.setRoleId(4);
             }
-
-            // Create new user
             UserDTO createdUser = userService.createUser(userDTO);
 
             Map<String, Object> response = new HashMap<>();
@@ -96,14 +86,9 @@ public class AuthController {
                 .body(createErrorResponse("Registration failed: " + e.getMessage()));
         }
     }
-
-    /**
-     * Login user
-     */
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> loginRequest) {
         try {
-            // Get username or email (can be either)
             String usernameOrEmail = loginRequest.get("username");
             if (usernameOrEmail == null || usernameOrEmail.trim().isEmpty()) {
                 usernameOrEmail = loginRequest.get("email");
@@ -111,7 +96,6 @@ public class AuthController {
 
             String password = loginRequest.get("password");
 
-            // Validate input
             if (usernameOrEmail == null || usernameOrEmail.trim().isEmpty()) {
                 return ResponseEntity.badRequest()
                     .body(createErrorResponse("Username or email is required"));
@@ -122,7 +106,6 @@ public class AuthController {
                     .body(createErrorResponse("Password is required"));
             }
 
-            // Find user entity by username or email for password verification
             Optional<User> userEntity;
             if (usernameOrEmail.contains("@")) {
                 userEntity = userRepository.findByEmail(usernameOrEmail);
@@ -130,7 +113,6 @@ public class AuthController {
                 userEntity = userRepository.findByUsername(usernameOrEmail);
             }
 
-            // If not found, return unauthorized
             if (userEntity.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(createErrorResponse("Invalid username/email or password"));
@@ -138,13 +120,11 @@ public class AuthController {
 
             User foundUser = userEntity.get();
 
-            // Validate password using BCrypt
             if (!passwordEncoder.matches(password, foundUser.getPasswordHash())) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(createErrorResponse("Invalid username/email or password"));
             }
 
-            // Build response user DTO (without password)
             Optional<UserDTO> user = userService.getUserById(foundUser.getId());
             if (user.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -152,12 +132,8 @@ public class AuthController {
             }
 
             UserDTO userDTO = user.get();
-
-            // Login successful - generate tokens
             String accessToken = jwtTokenProvider.generateAccessToken(userDTO);
             String refreshToken = jwtTokenProvider.generateRefreshToken(userDTO);
-
-            // Prepare sanitized user info (do not expose passwordHash)
             Map<String, Object> userInfo = new HashMap<>();
             userInfo.put("id", userDTO.getId());
             userInfo.put("username", userDTO.getUsername());
@@ -170,12 +146,10 @@ public class AuthController {
             userInfo.put("createdAt", userDTO.getCreatedAt());
             userInfo.put("updatedAt", userDTO.getUpdatedAt());
 
-            // Try to get employee details
             Optional<EmployeeDTO> employee = Optional.empty();
             try {
                 employee = employeeService.getEmployeeByUserId(userDTO.getId());
             } catch (ObjectNotFoundException ex) {
-                // Employee references a missing user, log and continue
             }
             if (employee.isPresent()) {
                 EmployeeDTO emp = employee.get();
@@ -212,10 +186,6 @@ public class AuthController {
         }
     }
 
-
-    /**
-     * Helper method to create error response
-     */
     private Map<String, Object> createErrorResponse(String message) {
         Map<String, Object> response = new HashMap<>();
         response.put("success", false);
